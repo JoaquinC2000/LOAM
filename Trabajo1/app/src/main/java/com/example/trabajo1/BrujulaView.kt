@@ -75,13 +75,11 @@ class BrujulaView @JvmOverloads constructor(
         val radioNumeros = radioTicks - 26f
         val radioLetras = radioTicks - 62f
 
-        // Fondo circular oscuro + bisel (efecto "metálico" simple con 2 anillos)
         canvas.drawCircle(cx, cy, radioExterno, pintarFondo)
         canvas.drawCircle(cx, cy, radioBisel, pintarBisel)
         canvas.drawCircle(cx, cy, radioTicks + 6f, pintarAnilloInterno)
 
-        // Marcas cada 6°, más largas y numeradas cada 30°, en rojo en los
-        // 4 puntos cardinales exactos (N=0°, E=90°, S=180°, O=270°)
+
         for (grado in 0 until 360 step 6) {
             val esMayor = grado % 30 == 0
             val esCardinalExacto = grado % 90 == 0
@@ -104,8 +102,6 @@ class BrujulaView @JvmOverloads constructor(
             val y2 = cy + ((radioTicks - largoMarca) * sin(anguloRad)).toFloat()
             canvas.drawLine(x1, y1, x2, y2, pintura)
 
-            // Los números se rotan junto con su posición, para que "sigan"
-            // la curva del anillo (como en las imágenes de referencia)
             if (esMayor) {
                 canvas.save()
                 canvas.rotate(grado.toFloat(), cx, cy)
@@ -114,13 +110,11 @@ class BrujulaView @JvmOverloads constructor(
             }
         }
 
-        // Crosshair central (crucecita + puntito), como en la imagen de iPhone
         canvas.drawLine(cx - 10f, cy, cx + 10f, cy, pintarCentro)
         canvas.drawLine(cx, cy - 10f, cx, cy + 10f, pintarCentro)
         val pintarPuntoCentro = Paint(pintarCentro).apply { style = Paint.Style.FILL }
         canvas.drawCircle(cx, cy, 3f, pintarPuntoCentro)
 
-        // Letras cardinales, más adentro que los números
         dibujarLetra(canvas, "N", 0, cx, cy, radioLetras, pintarNorte)
         dibujarLetra(canvas, "E", 90, cx, cy, radioLetras, pintarLetraCardinal)
         dibujarLetra(canvas, "S", 180, cx, cy, radioLetras, pintarLetraCardinal)

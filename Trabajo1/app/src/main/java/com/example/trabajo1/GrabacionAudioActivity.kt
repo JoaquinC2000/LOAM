@@ -70,9 +70,6 @@ class GrabacionAudioActivity : AppCompatActivity() {
         if (!grabando) iniciarGrabacion() else detenerGrabacion()
     }
 
-    // Requisito f: grabar con el mic y guardarlo "como los videos" — usamos
-    // el mismo mecanismo de fondo (MediaStore) para que el archivo quede en
-    // el almacenamiento del celular, no adentro de la app.
     private fun iniciarGrabacion() {
         val tienePermiso = ContextCompat.checkSelfPermission(
             this, Manifest.permission.RECORD_AUDIO
@@ -82,9 +79,6 @@ class GrabacionAudioActivity : AppCompatActivity() {
             return
         }
 
-        // A diferencia del video (donde CameraX se encargaba solo de crear
-        // el archivo en MediaStore), acá lo hacemos a mano: creamos primero
-        // la "entrada vacía" en MediaStore, que nos devuelve un Uri...
         val nombreArchivo = "Trabajo1_audio_${System.currentTimeMillis()}.m4a"
         val valores = ContentValues().apply {
             put(MediaStore.Audio.Media.DISPLAY_NAME, nombreArchivo)
@@ -99,9 +93,7 @@ class GrabacionAudioActivity : AppCompatActivity() {
         uriArchivoActual = uri
 
         try {
-            // ...y ahora abrimos ese Uri como un "file descriptor" (un canal
-            // de escritura de bajo nivel), que es lo que MediaRecorder
-            // necesita para ir grabando directamente ahí adentro.
+
             val descriptor = contentResolver.openFileDescriptor(uri, "rw") ?: return
 
             mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -119,7 +111,7 @@ class GrabacionAudioActivity : AppCompatActivity() {
                 prepare()
                 start()
             }
-            descriptor.close() // ya no lo necesitamos nosotros, MediaRecorder sigue escribiendo internamente
+            descriptor.close()
 
             grabando = true
             textoEstado.visibility = View.GONE

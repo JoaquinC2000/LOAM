@@ -72,6 +72,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var botonGuia: LinearLayout  // Guia
     private lateinit var botonComandoVoz: ImageView  // Comando de voz
 
+
     // Alerta de catástrofe
     private lateinit var overlayAlerta: View
     private var alertaActivaAhora = false
@@ -141,6 +142,10 @@ class MainActivity : AppCompatActivity() {
         botonChat = findViewById(R.id.btnChatAsistencia)
         botonGuia = findViewById(R.id.btnGuiaAccion)
         botonComandoVoz = findViewById(R.id.btnComandoVoz)
+        botonComandoVoz.setOnLongClickListener {
+            activarAlertaCatastrofe("Terremoto", -35.6566, -63.7568, System.currentTimeMillis())
+            true
+        }
         overlayAlerta = findViewById(R.id.overlayAlertaCatastrofe)
 
         configurarServicioLinterna()

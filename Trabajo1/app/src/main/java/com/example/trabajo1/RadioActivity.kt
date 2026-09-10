@@ -35,7 +35,7 @@ class RadioActivity : AppCompatActivity() {
     private var indiceActual = 0
     private var reproductor: MediaPlayer? = null
     private var estaSonando = false
-    private var estaConectando = false // clave para el fix del bug
+    private var estaConectando = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,7 +110,6 @@ class RadioActivity : AppCompatActivity() {
         }
     }
 
-    // Lista VERTICAL (una fila debajo de la otra), no horizontal.
     private fun armarListaEmisoras() {
         contenedorLista.removeAllViews()
         emisoras.forEachIndexed { index, emisora ->
@@ -154,18 +153,18 @@ class RadioActivity : AppCompatActivity() {
     }
 
     private fun alternarReproduccion() {
-        if (emisoras.isEmpty() || estaConectando) return // FIX: ignora toques mientras conecta
+        if (emisoras.isEmpty() || estaConectando) return
         if (estaSonando) detenerReproduccion() else iniciarReproduccion()
     }
 
     private fun iniciarReproduccion() {
-        if (estaConectando) return // FIX: doble seguro
+        if (estaConectando) return
         val emisora = emisoras.getOrNull(indiceActual) ?: return
 
-        liberarReproductorActual() // FIX: por las dudas, nunca dejar uno viejo colgado
+        liberarReproductorActual()
 
         estaConectando = true
-        botonPower.isEnabled = false // FIX: bloquea el botón mientras conecta
+        botonPower.isEnabled = false
         textoEstado.text = "Conectando..."
 
         try {
@@ -201,8 +200,6 @@ class RadioActivity : AppCompatActivity() {
         }
     }
 
-    // Libera el MediaPlayer actual (si hay uno), sea que esté sonando,
-    // pausado, o todavía conectando. Es seguro llamarlo en cualquier momento.
     private fun liberarReproductorActual() {
         try {
             reproductor?.apply {
@@ -217,7 +214,6 @@ class RadioActivity : AppCompatActivity() {
         reproductor = null
     }
 
-    // El botón de STOP: fuerza a parar todo, incluso si estaba a mitad de conectar.
     private fun detenerReproduccion() {
         liberarReproductorActual()
         estaConectando = false

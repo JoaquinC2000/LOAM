@@ -28,8 +28,6 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var campoTexto: EditText
     private val firestore = FirebaseFirestore.getInstance()
 
-    // Evita disparar 2 respuestas automáticas a la vez mientras esperamos
-    // que Firestore confirme la escritura de la anterior.
     private var procesandoRespuestaAutomatica = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,8 +79,6 @@ class ChatActivity : AppCompatActivity() {
             }
     }
 
-    // Acá está el corazón de la simulación de conversación (explicado
-    // arriba en el mensaje). "orden" es ese "id" que mencionó tu profe.
     private fun comprobarSiguienteMensajeDelGuion(mensajes: List<MensajeChat>) {
         if (procesandoRespuestaAutomatica) return
 
@@ -104,14 +100,11 @@ class ChatActivity : AppCompatActivity() {
             .addOnSuccessListener { resultado ->
                 val textoRespuesta = resultado.documents.firstOrNull()?.getString("texto")
                 if (textoRespuesta == null) {
-                    // No hay más guion cargado: la charla "se terminó" ahí.
+
                     procesandoRespuestaAutomatica = false
                     return@addOnSuccessListener
                 }
 
-                // Demora de 1.2 segundos para que se sienta más natural
-                // (como que "el asistente está escribiendo"), no una
-                // respuesta instantánea y robótica.
                 Handler(Looper.getMainLooper()).postDelayed({
                     val datos = hashMapOf(
                         "texto" to textoRespuesta,

@@ -123,8 +123,6 @@ class GuiaActivity : AppCompatActivity() {
         botonPantallaCompleta.setOnClickListener { abrirPantallaCompleta() }
         botonCerrarFullscreenGuia.setOnClickListener { cerrarPantallaCompleta() }
 
-        // Si el usuario aprieta "atrás" estando en pantalla completa, que
-        // salga del fullscreen primero, en vez de cerrar toda la pantalla.
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (estaEnFullscreen) {
@@ -218,11 +216,6 @@ class GuiaActivity : AppCompatActivity() {
         botonPantallaCompleta.visibility = View.VISIBLE
     }
 
-    // Acá está el corazón del pedido: NO se crea ningún reproductor nuevo,
-    // se toma el VideoView que ya está reproduciendo y se lo "muda" de
-    // contenedor. Como es la MISMA instancia, la reproducción sigue sin
-    // cortarse (a lo sumo un parpadeo de un frame mientras se reacomoda
-    // en la nueva ubicación).
     private fun abrirPantallaCompleta() {
         if (estaEnFullscreen) return
         estaEnFullscreen = true
@@ -244,9 +237,6 @@ class GuiaActivity : AppCompatActivity() {
         estaEnFullscreen = false
 
         contenedorVideoFullscreen.removeView(videoCatastrofe)
-        // Reconstruimos las MISMAS restricciones que tiene en el XML
-        // original (relación 16:9, pegado a los 3 bordes) para que vuelva
-        // a verse igual que antes al moverlo de nuevo a su lugar.
         val paramsInline = ConstraintLayout.LayoutParams(0, 0).apply {
             dimensionRatio = "H,16:9"
             startToStart = ConstraintLayout.LayoutParams.PARENT_ID

@@ -89,14 +89,6 @@ class GrabacionVideoActivity : AppCompatActivity() {
         verificarPermisosYArrancar()
     }
 
-    // Redondea las puntas del panel de cámara. Un PreviewView (como
-    // cualquier vista que renderiza video) NO respeta un simple XML con
-    // <corners>, porque dibuja sobre una superficie aparte, no de la forma
-    // normal. La técnica correcta es: 1) decirle a Android la "forma" que
-    // tiene que recortar (un ViewOutlineProvider con un rectángulo
-    // redondeado), y 2) activar clipToOutline para que efectivamente
-    // recorte al dibujar. Es una técnica genérica: sirve para redondear
-    // CUALQUIER View de Android, no solo cámaras.
     private fun redondearVistaPrevia() {
         val radioEnPx = 24 * resources.displayMetrics.density // 24dp convertidos a píxeles
         vistaPrevia.outlineProvider = object : ViewOutlineProvider() {
@@ -105,11 +97,6 @@ class GrabacionVideoActivity : AppCompatActivity() {
             }
         }
         vistaPrevia.clipToOutline = true
-        // COMPATIBLE fuerza a CameraX a usar TextureView en vez de
-        // SurfaceView para dibujar la cámara. Es un poquito menos
-        // eficiente, pero garantiza que el recorte de esquinas se vea
-        // bien en todos los dispositivos (con SurfaceView, el recorte a
-        // veces falla en equipos más viejos).
         vistaPrevia.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
     }
 

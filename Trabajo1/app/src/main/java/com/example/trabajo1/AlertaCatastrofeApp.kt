@@ -14,21 +14,14 @@ class AlertaCatastrofeApp : Application() {
     override fun onCreate() {
         super.onCreate()
         firestore = FirebaseFirestore.getInstance()
-        // "alertas_prefs" es solo el nombre del archivo donde se guarda esto
-        // en el almacenamiento del celular — un archivito chiquito, propio
-        // de tu app, que sobrevive a que cierres/reabras la aplicación.
         preferencias = getSharedPreferences("alertas_prefs", MODE_PRIVATE)
         escucharEventosDeCatastrofe()
     }
 
-    // Lee del disco la lista de IDs ya procesados. El ?.toMutableSet() es
-    // importante: Android no permite modificar directamente el Set que te
-    // devuelve getStringSet(), hay que copiarlo primero.
     private fun obtenerIdsProcesados(): MutableSet<String> {
         return preferencias.getStringSet("ids_procesados", emptySet())?.toMutableSet() ?: mutableSetOf()
     }
 
-    // Agrega un ID nuevo y GUARDA la lista actualizada en disco al instante.
     private fun marcarComoProcesado(id: String) {
         val actuales = obtenerIdsProcesados()
         actuales.add(id)
