@@ -125,7 +125,7 @@ class GrabacionAudioActivity : AppCompatActivity() {
         } catch (error: Exception) {
             error.printStackTrace()
             mostrarEstado("Error al iniciar la grabación: ${error.message}")
-            uriArchivoActual?.let { contentResolver.delete(it, null, null) } // limpiamos la entrada vacía
+            uriArchivoActual?.let { contentResolver.delete(it, null, null) }
             uriArchivoActual = null
         }
     }

@@ -28,7 +28,6 @@
     <!-- Colores para la sección de Guia -->
     <color name="accent_guia">#F57C00</color>
 
-
     <!--- - - - - - - - - - - - - - - - - - - - - - -->
     <color name="accent_voz">#3F51B5</color>
     <color name="bateria_media">#FFA000</color>

@@ -66,7 +66,7 @@ class UbicacionActivity : AppCompatActivity() {
         else mostrarError("Necesitamos el permiso de ubicación para mostrar dónde estás.")
     }
 
-    // === Brújula (Punto de innovación) ===
+    // === Brújula ===
     private lateinit var administradorSensores: SensorManager
     private var sensorAcelerometro: Sensor? = null
     private var sensorMagnetometro: Sensor? = null

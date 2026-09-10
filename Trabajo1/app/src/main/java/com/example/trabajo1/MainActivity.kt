@@ -176,9 +176,6 @@ class MainActivity : AppCompatActivity() {
         revisarIntentDeAlerta(intent)
     }
 
-    // Se dispara cuando la Activity YA existe (gracias a singleTask) y
-    // alguien la trae al frente de nuevo con un Intent nuevo — es lo que
-    // permite reaccionar a la alerta sin importar en qué pantalla estabas.
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -193,9 +190,175 @@ class MainActivity : AppCompatActivity() {
 
         activarAlertaCatastrofe(tipo, lat, lon, fechaHoraMillis)
 
-        // Limpiamos el extra para que no se repita solo si la Activity se
-        // recrea (ej: rotar pantalla) mientras el mismo Intent sigue activo.
         intentRecibido.removeExtra("alertaTipo")
+    }
+
+    // =========================================================================
+    // CLIMA
+    // =========================================================================
+    private fun obtenerDatosDelClima() {
+        lifecycleScope.launch {
+            try {
+                val respuestaJson = withContext(Dispatchers.IO) {
+                    val urlApi = URL("https://api.open-meteo.com/v1/forecast?latitude=-35.6566&longitude=-63.7568&current=temperature_2m,weather_code")
+                    val conexion = (urlApi.openConnection() as HttpURLConnection).apply {
+                        requestMethod = "GET"
+                        connectTimeout = 8000
+                        readTimeout = 8000
+                        setRequestProperty("User-Agent", "SafeguardApp/1.0")
+                    }
+
+                    val lector = BufferedReader(InputStreamReader(conexion.inputStream))
+                    val respuesta = StringBuilder()
+                    var linea: String?
+                    while (lector.readLine().also { linea = it } != null) {
+                        respuesta.append(linea)
+                    }
+                    lector.close()
+                    conexion.disconnect()
+                    respuesta.toString()
+                }
+
+                val jsonCompleto = JSONObject(respuestaJson)
+                val datosActuales = jsonCompleto.getJSONObject("current")
+                val temperaturaObtenida = datosActuales.getDouble("temperature_2m").toInt()
+                val codigoClima = datosActuales.getInt("weather_code")
+
+                textoTemperatura.text = "${temperaturaObtenida}°C"
+                textoDescripcionClima.text = interpretarCodigoClima(codigoClima)
+                iconoClima.text = iconoParaClima(codigoClima)
+
+            } catch (error: Exception) {
+                error.printStackTrace()
+                textoDescripcionClima.text = "Sin conexión"
+            }
+        }
+    }
+
+    private fun interpretarCodigoClima(codigo: Int): String {
+        return when (codigo) {
+            0 -> "Despejado"
+            1, 2, 3 -> "Parcialmente nublado"
+            45, 48 -> "Niebla"
+            51, 53, 55 -> "Llovizna"
+            61, 63, 65 -> "Lluvia"
+            71, 73, 75 -> "Nieve"
+            80, 81, 82 -> "Chubascos"
+            95, 96, 99 -> "Tormenta eléctrica"
+            else -> "Estable"
+        }
+    }
+
+    private fun iconoParaClima(codigo: Int): String {
+        return when (codigo) {
+            0 -> "☀️"
+            1, 2, 3 -> "⛅"
+            45, 48 -> "🌫️"
+            51, 53, 55 -> "🌦️"
+            61, 63, 65 -> "🌧️"
+            71, 73, 75 -> "❄️"
+            80, 81, 82 -> "🌦️"
+            95, 96, 99 -> "⛈️"
+            else -> "🌡️"
+        }
+    }
+
+    // =========================================================================
+    // BATERÍA
+    // =========================================================================
+    private fun actualizarUiBateria(intent: Intent) {
+        val nivel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+        val escala = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+        val porcentaje = if (nivel >= 0 && escala > 0) (nivel * 100 / escala) else -1
+
+        if (porcentaje < 0) {
+            textoPorcentajeBateria.text = "--%"
+            textoTiempoRestanteBateria.text = "No disponible"
+            return
+        }
+
+        textoPorcentajeBateria.text = "$porcentaje%"
+        actualizarIconoBateria(porcentaje)
+
+        val enchufado = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)
+        if (enchufado != 0) {
+            textoTiempoRestanteBateria.text = "Cargando"
+            return
+        }
+
+        val consumoPromedioPorHora = 5.5
+        val horasRestantes = porcentaje / consumoPromedioPorHora
+        val horas = horasRestantes.toInt()
+        val minutos = ((horasRestantes - horas) * 60).toInt()
+
+        val calendario = Calendar.getInstance()
+        calendario.add(Calendar.MINUTE, (horasRestantes * 60).toInt())
+        val formatoHora = SimpleDateFormat("HH:mm", Locale.getDefault())
+
+        textoTiempoRestanteBateria.text = "${horas}h ${minutos}m (hasta ~${formatoHora.format(calendario.time)})"
+    }
+
+    private fun actualizarIconoBateria(porcentaje: Int) {
+        val (emoji, color) = when {
+            porcentaje > 50 -> "🔋" to R.color.on
+            porcentaje > 20 -> "🪫" to R.color.bateria_media
+            else -> "🪫" to R.color.bateria_baja
+        }
+        iconoBateria.text = emoji
+        textoPorcentajeBateria.setTextColor(ContextCompat.getColor(this, color))
+    }
+
+    // =========================================================================
+    // LINTERNA
+    // =========================================================================
+    private fun configurarServicioLinterna() {
+        administradorCamara = getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        try {
+            for (id in administradorCamara.cameraIdList) {
+                val caracteristicas = administradorCamara.getCameraCharacteristics(id)
+                val tieneFlash = caracteristicas.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
+                if (tieneFlash) {
+                    idCamaraConFlash = id
+                    break
+                }
+            }
+        } catch (error: CameraAccessException) {
+            error.printStackTrace()
+            Toast.makeText(this, "Error al acceder a la cámara", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun cambiarEstadoLinterna() {
+        if (idCamaraConFlash == null) {
+            Toast.makeText(this, "El dispositivo no cuenta con flash disponible", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        try {
+            if (estaLinternaEncendida) {
+                administradorCamara.setTorchMode(idCamaraConFlash!!, false)
+                estaLinternaEncendida = false
+                actualizarInterfazLinterna(false)
+            } else {
+                administradorCamara.setTorchMode(idCamaraConFlash!!, true)
+                estaLinternaEncendida = true
+                actualizarInterfazLinterna(true)
+            }
+        } catch (error: Exception) {
+            error.printStackTrace()
+            Toast.makeText(this, "Error al alternar la linterna", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun actualizarInterfazLinterna(encendida: Boolean) {
+        if (encendida) {
+            textoEstadoLinterna.text = "ENCENDIDA"
+            textoEstadoLinterna.setTextColor(ContextCompat.getColor(this, R.color.on))
+            iconoLinterna.setImageResource(R.drawable.flashlight_on)
+        } else {
+            textoEstadoLinterna.text = "APAGADA"
+            textoEstadoLinterna.setTextColor(ContextCompat.getColor(this, R.color.off))
+            iconoLinterna.setImageResource(R.drawable.flashlight_off)
+        }
     }
 
     // =========================================================================
@@ -430,174 +593,6 @@ class MainActivity : AppCompatActivity() {
     private fun quitarTildes(texto: String): String {
         val normalizado = java.text.Normalizer.normalize(texto, java.text.Normalizer.Form.NFD)
         return normalizado.replace(Regex("\\p{Mn}"), "")
-    }
-
-    // =========================================================================
-    // CLIMA
-    // =========================================================================
-    private fun obtenerDatosDelClima() {
-        lifecycleScope.launch {
-            try {
-                val respuestaJson = withContext(Dispatchers.IO) {
-                    val urlApi = URL("https://api.open-meteo.com/v1/forecast?latitude=-35.6566&longitude=-63.7568&current=temperature_2m,weather_code")
-                    val conexion = (urlApi.openConnection() as HttpURLConnection).apply {
-                        requestMethod = "GET"
-                        connectTimeout = 8000
-                        readTimeout = 8000
-                        setRequestProperty("User-Agent", "SafeguardApp/1.0")
-                    }
-
-                    val lector = BufferedReader(InputStreamReader(conexion.inputStream))
-                    val respuesta = StringBuilder()
-                    var linea: String?
-                    while (lector.readLine().also { linea = it } != null) {
-                        respuesta.append(linea)
-                    }
-                    lector.close()
-                    conexion.disconnect()
-                    respuesta.toString()
-                }
-
-                val jsonCompleto = JSONObject(respuestaJson)
-                val datosActuales = jsonCompleto.getJSONObject("current")
-                val temperaturaObtenida = datosActuales.getDouble("temperature_2m").toInt()
-                val codigoClima = datosActuales.getInt("weather_code")
-
-                textoTemperatura.text = "${temperaturaObtenida}°C"
-                textoDescripcionClima.text = interpretarCodigoClima(codigoClima)
-                iconoClima.text = iconoParaClima(codigoClima)
-
-            } catch (error: Exception) {
-                error.printStackTrace()
-                textoDescripcionClima.text = "Sin conexión"
-            }
-        }
-    }
-
-    private fun interpretarCodigoClima(codigo: Int): String {
-        return when (codigo) {
-            0 -> "Despejado"
-            1, 2, 3 -> "Parcialmente nublado"
-            45, 48 -> "Niebla"
-            51, 53, 55 -> "Llovizna"
-            61, 63, 65 -> "Lluvia"
-            71, 73, 75 -> "Nieve"
-            80, 81, 82 -> "Chubascos"
-            95, 96, 99 -> "Tormenta eléctrica"
-            else -> "Estable"
-        }
-    }
-
-    private fun iconoParaClima(codigo: Int): String {
-        return when (codigo) {
-            0 -> "☀️"
-            1, 2, 3 -> "⛅"
-            45, 48 -> "🌫️"
-            51, 53, 55 -> "🌦️"
-            61, 63, 65 -> "🌧️"
-            71, 73, 75 -> "❄️"
-            80, 81, 82 -> "🌦️"
-            95, 96, 99 -> "⛈️"
-            else -> "🌡️"
-        }
-    }
-
-    // =========================================================================
-    // BATERÍA
-    // =========================================================================
-    private fun actualizarUiBateria(intent: Intent) {
-        val nivel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-        val escala = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-        val porcentaje = if (nivel >= 0 && escala > 0) (nivel * 100 / escala) else -1
-
-        if (porcentaje < 0) {
-            textoPorcentajeBateria.text = "--%"
-            textoTiempoRestanteBateria.text = "No disponible"
-            return
-        }
-
-        textoPorcentajeBateria.text = "$porcentaje%"
-        actualizarIconoBateria(porcentaje)
-
-        val enchufado = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)
-        if (enchufado != 0) {
-            textoTiempoRestanteBateria.text = "Cargando"
-            return
-        }
-
-        val consumoPromedioPorHora = 5.5
-        val horasRestantes = porcentaje / consumoPromedioPorHora
-        val horas = horasRestantes.toInt()
-        val minutos = ((horasRestantes - horas) * 60).toInt()
-
-        val calendario = Calendar.getInstance()
-        calendario.add(Calendar.MINUTE, (horasRestantes * 60).toInt())
-        val formatoHora = SimpleDateFormat("HH:mm", Locale.getDefault())
-
-        textoTiempoRestanteBateria.text = "${horas}h ${minutos}m (hasta ~${formatoHora.format(calendario.time)})"
-    }
-
-    private fun actualizarIconoBateria(porcentaje: Int) {
-        val (emoji, color) = when {
-            porcentaje > 50 -> "🔋" to R.color.on
-            porcentaje > 20 -> "🪫" to R.color.bateria_media
-            else -> "🪫" to R.color.bateria_baja
-        }
-        iconoBateria.text = emoji
-        textoPorcentajeBateria.setTextColor(ContextCompat.getColor(this, color))
-    }
-
-    // =========================================================================
-    // LINTERNA
-    // =========================================================================
-    private fun configurarServicioLinterna() {
-        administradorCamara = getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        try {
-            for (id in administradorCamara.cameraIdList) {
-                val caracteristicas = administradorCamara.getCameraCharacteristics(id)
-                val tieneFlash = caracteristicas.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
-                if (tieneFlash) {
-                    idCamaraConFlash = id
-                    break
-                }
-            }
-        } catch (error: CameraAccessException) {
-            error.printStackTrace()
-            Toast.makeText(this, "Error al acceder a la cámara", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun cambiarEstadoLinterna() {
-        if (idCamaraConFlash == null) {
-            Toast.makeText(this, "El dispositivo no cuenta con flash disponible", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        try {
-            if (estaLinternaEncendida) {
-                administradorCamara.setTorchMode(idCamaraConFlash!!, false)
-                estaLinternaEncendida = false
-                actualizarInterfazLinterna(false)
-            } else {
-                administradorCamara.setTorchMode(idCamaraConFlash!!, true)
-                estaLinternaEncendida = true
-                actualizarInterfazLinterna(true)
-            }
-        } catch (error: Exception) {
-            error.printStackTrace()
-            Toast.makeText(this, "Error al alternar la linterna", Toast.LENGTH_SHORT).show()
-        }
-    }
-    private fun actualizarInterfazLinterna(encendida: Boolean) {
-        if (encendida) {
-            textoEstadoLinterna.text = "ENCENDIDA"
-            textoEstadoLinterna.setTextColor(ContextCompat.getColor(this, R.color.on))
-            iconoLinterna.setImageResource(R.drawable.flashlight_on)
-        } else {
-            textoEstadoLinterna.text = "APAGADA"
-            textoEstadoLinterna.setTextColor(ContextCompat.getColor(this, R.color.off))
-            iconoLinterna.setImageResource(R.drawable.flashlight_off)
-        }
     }
 
     // =========================================================================
