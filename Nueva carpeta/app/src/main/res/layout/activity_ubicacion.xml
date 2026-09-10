@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <WebView
+        android:id="@+id/mapaUbicacion"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_header_translucido"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/botonVolverUbicacion"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:src="@drawable/volver_atras"
+            android:contentDescription="Volver"
+            android:clickable="true"
+            android:focusable="true"
+            app:tint="@color/white"
+            android:padding="4dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="¿Dónde estoy?"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textoErrorUbicacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginTop="70dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="124dp"
+        android:background="@drawable/bg_indicador_grabando"
+        android:padding="12dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:text="⚠️ El GPS está desactivado. Activalo en Ajustes." />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="28dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:id="@+id/botonRegistrarUbicacion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_boton_pildora"
+            android:clickable="true"
+            android:focusable="true"
+            android:elevation="6dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="28dp"
+            android:paddingVertical="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="REGISTRAR MI UBICACIÓN"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/botonAbrirBrujula"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/bg_boton_pildora"
+            android:clickable="true"
+            android:focusable="true"
+            android:elevation="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="🧭"
+                android:textSize="24sp" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/overlayBrujulaGrande"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <FrameLayout
+                android:layout_width="290dp"
+                android:layout_height="290dp">
+
+                <com.example.trabajo1.BrujulaView
+                    android:id="@+id/vistaBrujulaGrande"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_marginTop="4dp"
+                    android:text="▲"
+                    android:textColor="@color/accent_emergencia"
+                    android:textSize="26sp"/>
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/textoGradosBrujulaGrande"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="--°"
+                android:textColor="@color/white"
+                android:textSize="34sp"
+                android:textStyle="bold"/>
+
+            <ImageView
+                android:id="@+id/botonCerrarBrujulaGrande"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginTop="28dp"
+                android:background="@drawable/bg_boton_play_circular"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:contentDescription="Cerrar"
+                app:tint="@color/white"
+                android:padding="10dp"
+                android:clickable="true"
+                android:focusable="true"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</FrameLayout>

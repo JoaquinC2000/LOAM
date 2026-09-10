@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="main_background">#F5F7FB</color> <!-- Fondo gris claro de la pantalla -->
+    <color name="bg_linterna">#232B32</color> <!-- Fondo gris oscuro/azulado del botón linterna -->
+    <color name="on">#00E676</color> <!-- Verde brillante cuando esté encendida -->
+    <color name="off">#9E9E9E</color> <!-- Gris cuando esté apagada -->
+
+    <!-- Colores para la sección del Clima -->
+    <color name="tarjeta_fondo">#FFFFFF</color>
+    <color name="texto_principal">#2D3436</color>
+    <color name="texto_secundario">#636E72</color>
+    <color name="borde_tarjeta">#DCDDE1</color>
+    <color name="icono_sol">#F39C12</color>
+
+    <!-- Colores para la sección de emergencia y localizacion -->
+    <color name="accent_emergencia">#D32F2F</color>
+    <color name="accent_ubicacion">#1976D2</color>
+
+    <!-- Colores para la sección multimedia -->
+    <color name="accent_multimedia">#7B1FA2</color>
+
+    <!-- Colores para la sección del chat -->
+    <color name="accent_chat">#00897B</color>
+    <color name="verde_whatsapp">#25D366</color>
+
+    <!-- Colores para la sección de Guia -->
+    <color name="accent_guia">#F57C00</color>
+
+
+    <!--- - - - - - - - - - - - - - - - - - - - - - -->
+    <color name="accent_voz">#3F51B5</color>
+    <color name="bateria_media">#FFA000</color>
+    <color name="bateria_baja">#D32F2F</color>
+
+</resources>

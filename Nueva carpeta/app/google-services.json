@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "619183439518",
+    "project_id": "alertacatastrofes-5c45c",
+    "storage_bucket": "alertacatastrofes-5c45c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:619183439518:android:b51bf28ee54ca778a8c58f",
+        "android_client_info": {
+          "package_name": "com.example.trabajo1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGRTZlF7alfUVGIVvWZgGLm4rx2Evq5pY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/botonVolverGuia"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:src="@drawable/volver_atras"
+                android:contentDescription="Volver"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Guía de Acción"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/texto_principal"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:background="@color/tarjeta_fondo">
+
+            <LinearLayout
+                android:id="@+id/tabIncendio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingVertical="14dp">
+
+                <TextView
+                    android:id="@+id/textoTabIncendio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="INCENDIOS"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/indicadorTabIncendio"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tabInundacion"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingVertical="14dp">
+
+                <TextView
+                    android:id="@+id/textoTabInundacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="INUNDACIONES"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/indicadorTabInundacion"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tabTerremoto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingVertical="14dp">
+
+                <TextView
+                    android:id="@+id/textoTabTerremoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TERREMOTOS"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:id="@+id/indicadorTabTerremoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="10dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/borde_tarjeta" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/imagenCatastrofe"
+                    android:layout_width="match_parent"
+                    android:layout_height="170dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/bg_tarjeta_clima"
+                    android:contentDescription="Imagen de la catástrofe"
+                    android:scaleType="centerCrop" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/contenedorTarjetaVideo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp">
+
+                    <LinearLayout
+                        android:id="@+id/contenedorVideoPlaceholder"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintDimensionRatio="H,16:9"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:background="@drawable/bg_tarjeta_clima"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:background="@drawable/bg_boton_play_circular"
+                            android:src="@android:drawable/ic_media_play"
+                            android:contentDescription="Reproducir video"
+                            app:tint="@color/white"
+                            android:padding="16dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="Ver Tutorial de Evacuación"
+                            android:textColor="@color/texto_principal"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <VideoView
+                        android:id="@+id/videoCatastrofe"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintDimensionRatio="H,16:9"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/botonPantallaCompleta"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_margin="8dp"
+                        android:background="@drawable/bg_boton_play_circular"
+                        android:src="@drawable/ic_fullscreen"
+                        android:contentDescription="Ver en pantalla completa"
+                        app:tint="@color/white"
+                        android:padding="8dp"
+                        android:visibility="gone"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:text="Pasos de Acción Crítica"
+                    android:textColor="@color/texto_principal"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/contenedorPasos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/contenedorVideoFullscreen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/botonCerrarFullscreenGuia"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="top|start"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_boton_play_circular"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:contentDescription="Salir de pantalla completa"
+            app:tint="@color/white"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </FrameLayout>
+
+</FrameLayout>
